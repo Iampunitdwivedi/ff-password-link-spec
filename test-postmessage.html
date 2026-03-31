@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<h2>Test postMessage</h2>
+<button onclick="window.parent.postMessage({goToScreen: 1}, '*')">Click me</button>
+<script>
+console.log('Script loaded');
+console.log('Parent:', window.parent === window ? 'NO PARENT (top level)' : 'HAS PARENT');
+</script>
+</body>
+</html>
