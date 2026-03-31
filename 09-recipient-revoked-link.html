@@ -359,3 +359,8 @@
 
 </body>
 </html>
+<script>
+document.querySelector('.btn-outline').addEventListener('click', function() {
+  window.parent.postMessage({goToScreen: 0}, "*");
+});
+</script>

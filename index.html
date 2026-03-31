@@ -382,6 +382,17 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' && current < screens.length - 1) { current++; update(); }
 });
 
+// Listen for navigation messages from iframes
+window.addEventListener('message', function(e) {
+  if (e.data && typeof e.data.goToScreen === 'number') {
+    var target = e.data.goToScreen;
+    if (target >= 0 && target < screens.length) {
+      current = target;
+      update();
+    }
+  }
+});
+
 buildNav();
 update();
 </script>
