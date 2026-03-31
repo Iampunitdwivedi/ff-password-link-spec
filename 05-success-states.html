@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen 5 — Toast / Success Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    --text-1: #1B1B1B;
+    --text-2: #5F5F5F;
+    --text-3: #8E8E8E;
+    --border: #E8E7E4;
+    --bg-page: #F2F1EE;
+    --bg-surface: #FFFFFF;
+    --bg-muted: #F7F6F3;
+    --purple: #7C3AED;
+    --purple-hover: #6D28D9;
+    --green: #16A34A;
+    --green-bg: #F0FDF4;
+    --green-border: #BBF7D0;
+    --green-text: #15803D;
+    --amber: #D97706;
+    --amber-bg: #FFFBEB;
+    --amber-border: #FDE68A;
+    --amber-text: #92400E;
+    --blue: #2563EB;
+    --blue-bg: #EFF6FF;
+    --blue-border: #BFDBFE;
+    --blue-text: #1E40AF;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-page);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Page layout */
+  .page-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px 100px;
+    gap: 48px;
+  }
+
+  /* Section title */
+  .section-header {
+    text-align: center;
+    max-width: 500px;
+  }
+  .section-header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .section-header p {
+    font-size: 13px;
+    color: var(--text-3);
+    line-height: 1.5;
+  }
+
+  /* Toast demo containers */
+  .toast-demo {
+    width: 100%;
+    max-width: 560px;
+  }
+  .demo-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-3);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+  .demo-context {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-bottom: 12px;
+    padding-left: 2px;
+    font-style: italic;
+  }
+
+  /* ── Toast base ── */
+  .toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+    position: relative;
+    animation: toastIn 0.35s ease;
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .toast-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .toast-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toast-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .toast-desc {
+    font-size: 12px;
+    margin-top: 3px;
+    line-height: 1.45;
+  }
+
+  .toast-action {
+    font-size: 12px;
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    padding: 0;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.15s;
+  }
+  .toast-action:hover { opacity: 0.8; }
+  .toast-action svg { width: 13px; height: 13px; }
+
+  .toast-close {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, opacity 0.15s;
+    opacity: 0.5;
+  }
+  .toast-close:hover { opacity: 1; }
+  .toast-close svg { width: 14px; height: 14px; }
+
+  /* Progress bar at bottom of toast */
+  .toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 12px;
+    right: 12px;
+    height: 3px;
+    border-radius: 0 0 4px 4px;
+    overflow: hidden;
+  }
+  .toast-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    animation: progressShrink 5s linear forwards;
+  }
+  @keyframes progressShrink {
+    from { width: 100%; }
+    to { width: 0%; }
+  }
+
+  /* ── Toast: Success (green) ── */
+  .toast-success {
+    background: var(--green-bg);
+    border-color: var(--green-border);
+  }
+  .toast-success .toast-icon { color: var(--green); }
+  .toast-success .toast-title { color: var(--green-text); }
+  .toast-success .toast-desc { color: var(--green-text); opacity: 0.75; }
+  .toast-success .toast-action { color: var(--green); }
+  .toast-success .toast-close { color: var(--green-text); }
+  .toast-success .toast-progress-bar { background: var(--green); opacity: 0.25; }
+
+  /* ── Toast: Info (blue) ── */
+  .toast-info {
+    background: var(--blue-bg);
+    border-color: var(--blue-border);
+  }
+  .toast-info .toast-icon { color: var(--blue); }
+  .toast-info .toast-title { color: var(--blue-text); }
+  .toast-info .toast-desc { color: var(--blue-text); opacity: 0.75; }
+  .toast-info .toast-close { color: var(--blue-text); }
+  .toast-info .toast-progress-bar { background: var(--blue); opacity: 0.25; }
+
+  /* ── Toast: Warning (amber) ── */
+  .toast-warning {
+    background: var(--amber-bg);
+    border-color: var(--amber-border);
+  }
+  .toast-warning .toast-icon { color: var(--amber); }
+  .toast-warning .toast-title { color: var(--amber-text); }
+  .toast-warning .toast-desc { color: var(--amber-text); opacity: 0.75; }
+  .toast-warning .toast-close { color: var(--amber-text); }
+  .toast-warning .toast-progress-bar { background: var(--amber); opacity: 0.25; }
+
+  /* Link preview inside toast */
+  .toast-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 4px 10px;
+    background: rgba(0,0,0,0.04);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: inherit;
+    opacity: 0.7;
+  }
+  .toast-link svg { width: 12px; height: 12px; }
+
+  /* Divider between demos */
+  .demo-divider {
+    width: 100%;
+    max-width: 560px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Position annotation */
+  .position-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+  }
+  .position-note svg { width: 12px; height: 12px; }
+
+  /* Screen label */
+  .screen-label {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--text-1); color: #fff; font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 100px; font-family: var(--font);
+    letter-spacing: 0.2px; white-space: nowrap; z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+
+  <div class="section-header">
+    <h1>Toast notifications</h1>
+    <p>These toasts appear at the bottom-right of the screen and auto-dismiss after 5 seconds. Shown here stacked for review.</p>
+  </div>
+
+  <!-- Toast 1: Password created -->
+  <div class="toast-demo">
+    <div class="demo-label">Toast 1 — Password created</div>
+    <div class="demo-context">Triggered after: user clicks "Create password & generate link" on Screen 2</div>
+    <div class="toast toast-success">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+        <path d="M22 4L12 14.01l-3-3"/>
+      </svg>
+      <div class="toast-content">
+        <div class="toast-title">Password created — link is ready to share</div>
+        <div class="toast-desc">Your password-protected link has been generated.</div>
+        <button class="toast-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy link
+        </button>
+      </div>
+      <button class="toast-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="demo-divider"></div>
+
+  <!-- Toast 2: Link copied -->
+  <div class="toast-demo">
+    <div class="demo-label">Toast 2 — Link copied</div>
+    <div class="demo-context">Triggered after: user clicks "Copy link" button on Screen 3</div>
+    <div class="toast toast-info">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+      </svg>
+      <div class="toast-content">
+        <div class="toast-title">Link copied to clipboard</div>
+        <div class="toast-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+          </svg>
+          https://app.fireflies.ai/s/p/abc123...def
+        </div>
+      </div>
+      <button class="toast-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="demo-divider"></div>
+
+  <!-- Toast 3: Password deleted -->
+  <div class="toast-demo">
+    <div class="demo-label">Toast 3 — Password deleted & link revoked</div>
+    <div class="demo-context">Triggered after: user confirms "Delete and revoke" on Screen 4</div>
+    <div class="toast toast-warning">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <div class="toast-content">
+        <div class="toast-title">Password deleted — link has been revoked</div>
+        <div class="toast-desc">The previous password-protected link is now permanently invalid. You can create a new password at any time.</div>
+      </div>
+      <button class="toast-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="toast-progress"><div class="toast-progress-bar"></div></div>
+    </div>
+  </div>
+
+  <div class="demo-divider"></div>
+
+  <!-- Positioning note -->
+  <div class="toast-demo" style="text-align:center;">
+    <div class="position-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01"/>
+      </svg>
+      In production these appear at the bottom-right, stacking upward, auto-dismissing after 5s
+    </div>
+  </div>
+
+</div>
+
+<div class="screen-label">Screen 5 · Toast notifications (all 3 states)</div>
+
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen 4 — Delete Confirmation Dialog</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    --text-1: #1B1B1B;
+    --text-2: #5F5F5F;
+    --text-3: #8E8E8E;
+    --border: #E8E7E4;
+    --bg-page: #F2F1EE;
+    --bg-surface: #FFFFFF;
+    --bg-muted: #F7F6F3;
+    --purple: #7C3AED;
+    --purple-bg: #F3EEFF;
+    --green: #16A34A;
+    --green-bg: #F0FDF4;
+    --green-border: #BBF7D0;
+    --green-text: #15803D;
+    --red: #DC2626;
+    --red-hover: #B91C1C;
+    --red-bg: #FEF2F2;
+    --red-border: #FECACA;
+    --amber: #D97706;
+    --amber-bg: #FFFBEB;
+    --amber-border: #FDE68A;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-page);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Background share modal (Screen 3, dimmed) ── */
+  .bg-modal {
+    position: relative;
+    z-index: 1;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 480px;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.04),
+      0 4px 16px rgba(0,0,0,0.08),
+      0 16px 48px rgba(0,0,0,0.06);
+    overflow: hidden;
+    filter: blur(2px);
+    opacity: 0.5;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .modal-header { padding: 22px 24px 0; position: relative; }
+  .modal-title {
+    font-size: 16px; font-weight: 600; color: var(--text-1);
+    line-height: 1.3; padding-right: 32px; letter-spacing: -0.2px;
+  }
+  .modal-subtitle { font-size: 13px; color: var(--text-3); margin-top: 3px; }
+  .close-btn {
+    position: absolute; top: 20px; right: 20px; width: 28px; height: 28px;
+    border: none; background: none; color: var(--text-3);
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  }
+  .close-btn svg { width: 18px; height: 18px; }
+
+  .tabs { display: flex; margin-top: 16px; padding: 0 24px; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 10px 0; margin-right: 24px; font-size: 14px; color: var(--text-3);
+    position: relative; font-weight: 400; display: flex; align-items: center; gap: 6px;
+  }
+  .tab.active { color: var(--text-1); font-weight: 500; }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+    height: 2px; background: var(--text-1); border-radius: 1px 1px 0 0;
+  }
+  .tab-badge {
+    font-size: 10px; font-weight: 600; background: var(--purple); color: #fff;
+    padding: 2px 6px; border-radius: 4px; letter-spacing: 0.4px; line-height: 1;
+  }
+
+  .modal-body { padding: 20px 24px 24px; }
+
+  .status-banner {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; background: var(--green-bg);
+    border: 1px solid var(--green-border); border-radius: var(--radius); margin-bottom: 22px;
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
+  }
+  .status-text { font-size: 13px; font-weight: 500; color: var(--green-text); }
+
+  .section { margin-bottom: 20px; }
+  .section-label { font-size: 12px; font-weight: 500; color: var(--text-3); margin-bottom: 6px; }
+  .section-meta { font-size: 11px; color: var(--text-3); margin-top: 6px; }
+
+  .field-row { display: flex; gap: 6px; align-items: center; }
+  .field-display {
+    flex: 1; height: 42px; border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 0 14px; font-size: 14px; color: var(--text-1); background: var(--bg-muted);
+    display: flex; align-items: center; overflow: hidden;
+  }
+  .field-display.mono {
+    font-family: var(--mono); font-size: 12px; color: var(--text-2);
+  }
+  .field-display .dots { font-size: 18px; letter-spacing: 3px; color: var(--text-1); }
+
+  .icon-btn {
+    width: 42px; height: 42px; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg-surface); color: var(--text-3);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  .btn-primary-bg {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; height: 42px; background: var(--purple); color: #fff;
+    border: none; border-radius: var(--radius); font-size: 14px; font-weight: 500;
+    font-family: var(--font);
+  }
+  .btn-primary-bg svg { width: 16px; height: 16px; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .danger-zone { display: flex; align-items: flex-start; gap: 12px; }
+  .danger-icon-bg {
+    width: 36px; height: 36px; border-radius: 8px; background: var(--red-bg);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .danger-icon-bg svg { width: 16px; height: 16px; color: var(--red); }
+  .danger-btn-bg { font-size: 13px; font-weight: 500; color: var(--red); }
+  .danger-desc { font-size: 12px; color: var(--text-3); margin-top: 4px; line-height: 1.45; }
+
+  /* ── Overlay ── */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Confirmation dialog ── */
+  .dialog {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 420px;
+    padding: 28px;
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.06),
+      0 8px 24px rgba(0,0,0,0.12),
+      0 24px 64px rgba(0,0,0,0.1);
+    animation: dialogIn 0.2s ease;
+  }
+
+  @keyframes dialogIn {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .dialog-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+  .dialog-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--amber);
+  }
+
+  .dialog-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 8px;
+    letter-spacing: -0.2px;
+  }
+
+  .dialog-body {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .dialog-link-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--red-bg);
+    border: 1px solid var(--red-border);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+  .dialog-link-preview svg {
+    width: 14px;
+    height: 14px;
+    color: var(--red);
+    flex-shrink: 0;
+  }
+  .dialog-link-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--red);
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+  .dialog-link-url {
+    font-size: 12px;
+    font-family: var(--mono);
+    color: var(--text-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dialog-link-strikethrough {
+    text-decoration: line-through;
+    text-decoration-color: var(--red);
+    text-decoration-thickness: 1.5px;
+  }
+
+  .dialog-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .btn-secondary {
+    height: 40px;
+    padding: 0 20px;
+    background: var(--bg-surface);
+    color: var(--text-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn-secondary:hover {
+    background: var(--bg-muted);
+    border-color: #D0CFCC;
+  }
+  .btn-secondary:active { transform: scale(0.98); }
+
+  .btn-destructive {
+    height: 40px;
+    padding: 0 20px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-destructive:hover { background: var(--red-hover); }
+  .btn-destructive:active { transform: scale(0.98); }
+  .btn-destructive svg { width: 15px; height: 15px; }
+
+  /* Screen label */
+  .screen-label {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--text-1); color: #fff; font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 100px; font-family: var(--font);
+    letter-spacing: 0.2px; white-space: nowrap; z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- Background: Screen 3 (blurred + dimmed) -->
+<div class="bg-modal">
+  <div class="modal-header">
+    <div class="modal-title">Fireflies Diarization Technology Overview</div>
+    <div class="modal-subtitle">Punit Dwivedi · Sun, Mar 22, 10:15 PM</div>
+    <button class="close-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="tabs">
+      <div class="tab">Share</div>
+      <div class="tab">Embed</div>
+      <div class="tab active">Password <span class="tab-badge">NEW</span></div>
+    </div>
+  </div>
+  <div class="modal-body">
+    <div class="status-banner"><div class="status-dot"></div><div class="status-text">Password protection is active</div></div>
+    <div class="section">
+      <div class="section-label">Password</div>
+      <div class="field-row">
+        <div class="field-display"><span class="dots">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span></div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div>
+      </div>
+      <div class="section-meta">Created Mar 31, 2026</div>
+    </div>
+    <div class="section">
+      <div class="section-label">Protected link</div>
+      <div class="field-row" style="margin-bottom:10px;">
+        <div class="field-display mono">https://app.fireflies.ai/s/p/abc123...def</div>
+        <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div>
+      </div>
+      <button class="btn-primary-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy link</button>
+    </div>
+    <div class="divider"></div>
+    <div class="danger-zone">
+      <div class="danger-icon-bg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-.7 12.1A2 2 0 0116.3 20H7.7a2 2 0 01-2-1.9L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
+      <div><div class="danger-btn-bg">Delete password & revoke link</div><div class="danger-desc">This will permanently invalidate the current link.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay + confirmation dialog -->
+<div class="overlay">
+  <div class="dialog">
+    <div class="dialog-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </div>
+
+    <div class="dialog-title">Delete password and revoke link?</div>
+
+    <div class="dialog-body">
+      This will permanently invalidate the current password-protected link. Anyone who has this link will immediately lose access to this meeting.<br><br>This action cannot be undone.
+    </div>
+
+    <div class="dialog-link-preview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+      </svg>
+      <span class="dialog-link-label">Link:</span>
+      <span class="dialog-link-url dialog-link-strikethrough">https://app.fireflies.ai/s/p/abc123...def</span>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="btn-secondary">Cancel</button>
+      <button class="btn-destructive">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-.7 12.1A2 2 0 0116.3 20H7.7a2 2 0 01-2-1.9L5 6"/>
+        </svg>
+        Delete and revoke
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="screen-label">Screen 4 · Delete confirmation dialog</div>
+
+</body>
+</html>

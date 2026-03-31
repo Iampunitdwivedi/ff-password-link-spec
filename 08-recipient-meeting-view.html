@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen 8 — Recipient: Meeting View</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --font: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --text-1: #1B1B1B;
+    --text-2: #5F5F5F;
+    --text-3: #8E8E8E;
+    --text-4: #B0B0B0;
+    --border: #E8E7E4;
+    --bg-page: #F7F6F3;
+    --bg-surface: #FFFFFF;
+    --bg-muted: #F0EFEC;
+    --purple: #7C3AED;
+    --purple-hover: #6D28D9;
+    --purple-bg: #F3EEFF;
+    --purple-border: #DDD0FC;
+    --purple-text: #5B21B6;
+    --blue: #2563EB;
+    --blue-bg: #EFF6FF;
+    --blue-border: #BFDBFE;
+    --blue-text: #1E40AF;
+    --green: #16A34A;
+    --orange: #EA580C;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg-page);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top nav bar ── */
+  .top-nav {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .logo-icon {
+    width: 26px; height: 26px; background: var(--purple); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 14px; height: 14px; color: #fff; }
+  .logo-text { font-size: 15px; font-weight: 600; color: var(--text-1); letter-spacing: -0.3px; }
+
+  .nav-divider {
+    width: 1px; height: 24px; background: var(--border);
+  }
+
+  .nav-badge {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 500; color: var(--purple-text);
+    background: var(--purple-bg); padding: 4px 10px; border-radius: 100px;
+  }
+  .nav-badge svg { width: 12px; height: 12px; }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-btn {
+    height: 34px; padding: 0 14px; background: var(--purple); color: #fff;
+    border: none; border-radius: var(--radius); font-size: 12px; font-weight: 500;
+    font-family: var(--font); cursor: pointer; display: flex; align-items: center; gap: 5px;
+    transition: background 0.15s;
+  }
+  .nav-btn:hover { background: var(--purple-hover); }
+  .nav-btn svg { width: 13px; height: 13px; }
+
+  /* ── Info banner ── */
+  .info-banner {
+    background: var(--blue-bg);
+    border-bottom: 1px solid var(--blue-border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .info-banner-left {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--blue-text);
+  }
+  .info-banner-left svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .info-banner-close {
+    width: 24px; height: 24px; border: none; background: none;
+    color: var(--blue-text); cursor: pointer; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.5; transition: opacity 0.15s;
+  }
+  .info-banner-close:hover { opacity: 1; }
+  .info-banner-close svg { width: 14px; height: 14px; }
+
+  /* ── Main layout ── */
+  .main-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 960px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Meeting header ── */
+  .meeting-header {
+    padding: 24px 0 0;
+  }
+
+  .meeting-title {
+    font-size: 22px; font-weight: 600; color: var(--text-1);
+    letter-spacing: -0.4px; margin-bottom: 8px; line-height: 1.3;
+  }
+
+  .meeting-meta-row {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 13px; color: var(--text-3);
+  }
+  .meta-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .meta-avatar {
+    width: 20px; height: 20px; border-radius: 50%; background: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 8px; font-weight: 600;
+  }
+
+  .meta-dot {
+    width: 3px; height: 3px; border-radius: 50%; background: var(--text-4);
+  }
+
+  /* ── Content tabs ── */
+  .content-tabs {
+    display: flex;
+    gap: 0;
+    margin-top: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .c-tab {
+    padding: 10px 0;
+    margin-right: 28px;
+    font-size: 14px;
+    color: var(--text-3);
+    position: relative;
+    font-weight: 400;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .c-tab:hover { color: var(--text-2); }
+  .c-tab.active { color: var(--text-1); font-weight: 500; }
+  .c-tab.active::after {
+    content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+    height: 2px; background: var(--text-1); border-radius: 1px 1px 0 0;
+  }
+
+  /* ── Transcript ── */
+  .transcript {
+    flex: 1;
+    padding: 20px 0 120px;
+    overflow-y: auto;
+  }
+
+  .utterance {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    position: relative;
+  }
+  .utterance + .utterance {
+    border-top: 1px solid var(--bg-muted);
+  }
+
+  .speaker-col {
+    width: 110px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .speaker-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .speaker-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .speaker-dot.s1 { background: var(--purple); }
+  .speaker-dot.s2 { background: var(--orange); }
+
+  .speaker-name {
+    font-size: 13px; font-weight: 500; color: var(--text-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .timestamp {
+    font-size: 11px; color: var(--text-4); margin-top: 3px;
+    font-family: var(--mono); letter-spacing: 0.3px; padding-left: 14px;
+  }
+
+  .utterance-text {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    padding-top: 1px;
+  }
+
+  /* ── Audio player ── */
+  .audio-player {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 50;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.04);
+  }
+
+  .player-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--purple); border: none; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: background 0.15s;
+  }
+  .player-btn:hover { background: var(--purple-hover); }
+  .player-btn svg { width: 16px; height: 16px; margin-left: 2px; }
+
+  .player-time {
+    font-size: 12px; color: var(--text-3); font-family: var(--mono);
+    min-width: 42px; letter-spacing: 0.3px;
+  }
+
+  .player-track {
+    flex: 1; height: 4px; background: var(--bg-muted); border-radius: 2px;
+    position: relative; cursor: pointer;
+  }
+  .player-progress {
+    height: 100%; width: 15%; background: var(--purple); border-radius: 2px;
+    position: relative;
+  }
+  .player-thumb {
+    position: absolute; right: -6px; top: -4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--purple); border: 2px solid var(--bg-surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+
+  .player-speed {
+    font-size: 12px; color: var(--text-3); font-weight: 500;
+    padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px;
+    cursor: pointer; font-family: var(--font); background: none;
+    transition: background 0.15s;
+  }
+  .player-speed:hover { background: var(--bg-muted); }
+
+  .player-volume {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .player-volume svg { width: 16px; height: 16px; color: var(--text-3); }
+  .player-vol-track {
+    width: 60px; height: 3px; background: var(--bg-muted); border-radius: 2px;
+  }
+  .player-vol-fill {
+    width: 70%; height: 100%; background: var(--text-3); border-radius: 2px;
+  }
+
+  /* ── Screen label ── */
+  .screen-label {
+    position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%);
+    background: var(--text-1); color: #fff; font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 100px; font-family: var(--font);
+    letter-spacing: 0.2px; white-space: nowrap; z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- Top nav -->
+<div class="top-nav">
+  <div class="nav-left">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+          <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </div>
+      <span class="logo-text">Fireflies.ai</span>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L4 6v5c0 5.25 3.4 10.15 8 11.25 4.6-1.1 8-6 8-11.25V6L12 2z"/>
+      </svg>
+      Password-protected view
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="nav-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+        <path d="M19 10v2a7 7 0 01-14 0v-2"/>
+      </svg>
+      Try Fireflies free
+    </button>
+  </div>
+</div>
+
+<!-- Info banner -->
+<div class="info-banner" id="info-banner">
+  <div class="info-banner-left">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M12 8v4M12 16h.01"/>
+    </svg>
+    You're viewing this meeting via a password-protected link shared by Punit Dwivedi
+  </div>
+  <button class="info-banner-close" id="dismiss-banner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
+<!-- Main content -->
+<div class="main-layout">
+
+  <div class="meeting-header">
+    <div class="meeting-title">Fireflies Diarization Technology Overview</div>
+    <div class="meeting-meta-row">
+      <div class="meta-item">
+        <div class="meta-avatar">PD</div>
+        Punit Dwivedi
+      </div>
+      <div class="meta-dot"></div>
+      <div class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Mar 22, 2026
+      </div>
+      <div class="meta-dot"></div>
+      <div class="meta-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+        </svg>
+        10:15 PM · 12 min
+      </div>
+    </div>
+  </div>
+
+  <div class="content-tabs">
+    <div class="c-tab active">Transcript</div>
+    <div class="c-tab">Summary</div>
+  </div>
+
+  <div class="transcript">
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s1"></div><div class="speaker-name">Speaker 1</div></div>
+        <div class="timestamp">00:01</div>
+      </div>
+      <div class="utterance-text">So start transcribing there also. All right, so the latest test variation on Fireflies as well. We've been looking at the diarization improvements specifically around distinguishing speakers without a dedicated mic setup.</div>
+    </div>
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s2"></div><div class="speaker-name">Speaker 2</div></div>
+        <div class="timestamp">00:15</div>
+      </div>
+      <div class="utterance-text">I think for some reason he is not taking the right vocabulary. Maybe, you know, this time we are using system audio or something, but it's heard as it has a variation, not diarization.</div>
+    </div>
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s1"></div><div class="speaker-name">Speaker 1</div></div>
+        <div class="timestamp">00:29</div>
+      </div>
+      <div class="utterance-text">Yeah, I think diarization is itself a complex word. Maybe — oh, it got it right this time. The system seems to be handling the vocabulary correction better now with the latest model update.</div>
+    </div>
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s2"></div><div class="speaker-name">Speaker 2</div></div>
+        <div class="timestamp">00:39</div>
+      </div>
+      <div class="utterance-text">Yes, I think again, if you see like I'm not using any mic or earphone, but still it is taking, you know, the accuracy is very sharp. It is absolutely taking, you know, speaker 1, 2, 3, 4 correctly.</div>
+    </div>
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s1"></div><div class="speaker-name">Speaker 1</div></div>
+        <div class="timestamp">00:49</div>
+      </div>
+      <div class="utterance-text">Yeah, got it. I can see that. It is very good. The speaker separation is working remarkably well even without individual microphones. This is a significant improvement over what we had in the previous version.</div>
+    </div>
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s2"></div><div class="speaker-name">Speaker 2</div></div>
+        <div class="timestamp">00:58</div>
+      </div>
+      <div class="utterance-text">And on the tech stack side, we've integrated the proprietary model directly rather than relying on the third-party diarization service. This gives us much better control over accuracy and latency, especially in complex audio environments with overlapping speech.</div>
+    </div>
+
+    <div class="utterance">
+      <div class="speaker-col">
+        <div class="speaker-row"><div class="speaker-dot s1"></div><div class="speaker-name">Speaker 1</div></div>
+        <div class="timestamp">01:14</div>
+      </div>
+      <div class="utterance-text">That's great. What about the NLP pipeline? Are we still exploring the integration of large language models for enhanced post-processing of the transcripts?</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Audio player -->
+<div class="audio-player">
+  <button class="player-btn">
+    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+  </button>
+  <span class="player-time">0:00</span>
+  <div class="player-track">
+    <div class="player-progress">
+      <div class="player-thumb"></div>
+    </div>
+  </div>
+  <span class="player-time">12:34</span>
+  <button class="player-speed">1x</button>
+  <div class="player-volume">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
+      <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>
+    </svg>
+    <div class="player-vol-track"><div class="player-vol-fill"></div></div>
+  </div>
+</div>
+
+<div class="screen-label">Screen 8 · Recipient — Meeting view (read-only)</div>
+
+<script>
+  document.getElementById('dismiss-banner').addEventListener('click', function() {
+    document.getElementById('info-banner').style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
